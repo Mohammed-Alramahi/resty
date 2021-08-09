@@ -1,11 +1,10 @@
 $backgroundColor: #efefef;
 $radius: 40%;
-
 form {
   display: inline-block;
   margin: auto;
   width: 200px;
-
+  
   label {
     display: flex;
     margin: 1rem 0;
@@ -17,7 +16,14 @@ form {
         padding: .25rem .5rem;
         background: #ccc;
 
-        &:hover, &.active {
+        &:hover {
+          background: #fff;
+        }
+        &.active{
+          background: #5f3;
+          font-size: 24px;
+        }
+        &.normal{
           background: #fff;
         }
       }
