@@ -8,6 +8,7 @@ import Header from './components/header';
 import Footer from './components/footer';
 import Form from './components/form';
 import Results from './components/results';
+import Loading from './components/loading';
 
 class App extends React.Component {
 
@@ -16,11 +17,21 @@ class App extends React.Component {
     this.state = {
       data: null,
       requestParams: {},
+      showLoading: false
     };
   }
+  fakeCall() {
+    this.setState({ showLoading: true })
+    setTimeout(() => {
+      this.setState({ showLoading: false })
+    }, 1000);
+
+  }
+
 
   callApi = (requestParams) => {
     // mock output
+    this.fakeCall();
     const data = {
       count: 2,
       results: [
@@ -33,14 +44,15 @@ class App extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <React.Fragment >
         <Header />
         <div>Request Method: {this.state.requestParams.method}</div>
         <div>URL: {this.state.requestParams.url}</div>
         <Form handleApiCall={this.callApi} />
-        <Results data={this.state.data} />
+        {this.state.showLoading && <Loading />}
+        {!this.state.showLoading && <Results data={this.state.data} />}
         <Footer />
-      </React.Fragment>
+      </React.Fragment >
     );
   }
 }

@@ -9,6 +9,7 @@ function Form(props) {
   const [postCssClass, setPostCssClass] = useState('normal');
   const [putCssClass, setPutCssClass] = useState('normal');
   const [deleteCssClass, setDeleteCssClass] = useState('normal');
+  const [showText, setShowText] = useState(false);
   function handleSubmit(e) {
     e.preventDefault();
     const formData = {
@@ -26,18 +27,22 @@ function Form(props) {
       case 'GET':
         setMethod('GET');
         setGetCssClass('active');
+        setShowText(false);
         break;
       case 'POST':
         setMethod('POST');
         setPostCssClass('active');
+        setShowText(true);
         break;
       case 'PUT':
         setMethod('PUT');
         setPutCssClass('active');
+        setShowText(true);
         break;
       case 'DELETE':
         setMethod('DELETE');
         setDeleteCssClass('active');
+        setShowText(false);
         break;
       default: break;
     }
@@ -56,6 +61,7 @@ function Form(props) {
           <span id="delete" className={putCssClass} onClick={(e) => methodChange(e)}>PUT</span>
           <span id="delete" className={deleteCssClass} onClick={(e) => methodChange(e)}>DELETE</span>
         </label>
+        {showText && <input type="text" />}
       </form>
     </>
   );
