@@ -4,20 +4,31 @@ import './form.scss';
 
 function Form(props) {
   const [method, setMethod] = useState('GET');
-  const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon');
+  const [url, setUrl] = useState('');
+  const [reqBody, setReqBody] = useState({});
   const [getCssClass, setGetCssClass] = useState('normal');
   const [postCssClass, setPostCssClass] = useState('normal');
   const [putCssClass, setPutCssClass] = useState('normal');
   const [deleteCssClass, setDeleteCssClass] = useState('normal');
   const [showText, setShowText] = useState(false);
+
   function handleSubmit(e) {
     e.preventDefault();
+    if (method === 'POST' || method === 'PUT') {
+      setReqBody(e.target.body.value)
+    }
     const formData = {
-      method,
       url,
-    };
+      method,
+      reqBody
+    }
     props.handleApiCall(formData);
+
   }
+
+
+
+
   function methodChange(e) {
     setGetCssClass('normal');
     setPostCssClass('normal');
@@ -50,9 +61,9 @@ function Form(props) {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <label >
+        <label>
           <span>URL: </span>
-          <input name='url' onChange={(e) => setUrl(e.target.value)} type='text' />
+          <input name='url' required onChange={(e) => setUrl(e.target.value)} value={url} type='text' />
           <button id="submit" type="submit">GO!</button>
         </label>
         <label className="methods">
@@ -61,8 +72,9 @@ function Form(props) {
           <span id="delete" className={putCssClass} onClick={(e) => methodChange(e)}>PUT</span>
           <span id="delete" className={deleteCssClass} onClick={(e) => methodChange(e)}>DELETE</span>
         </label>
-        {showText && <input type="text" />}
+        {showText && <input type="text" name="body" />}
       </form>
+
     </>
   );
 }

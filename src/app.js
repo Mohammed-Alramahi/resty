@@ -9,6 +9,7 @@ import Footer from './components/footer';
 import Form from './components/form';
 import Results from './components/results';
 import Loading from './components/loading';
+import axios from 'axios';
 
 class App extends React.Component {
 
@@ -29,17 +30,33 @@ class App extends React.Component {
   }
 
 
-  callApi = (requestParams) => {
+  callApi = async (requestParams) => {
     // mock output
     this.fakeCall();
-    const data = {
-      count: 2,
-      results: [
-        { name: 'fake thing 1', url: 'http://fakethings.com/1' },
-        { name: 'fake thing 2', url: 'http://fakethings.com/2' },
-      ],
-    };
-    this.setState({ data, requestParams });
+    let data;
+    const { method, url, reqBody } = requestParams;
+    switch (method) {
+      case 'GET': {
+        data = await (axios.get(url));
+        break;
+      }
+      case 'POST': {
+        data = await (axios.post(url, reqBody));
+        break;
+      }
+      case 'PUT': {
+        data = await (axios.put(url, reqBody));
+        break;
+      }
+      case 'DELETE': {
+        data = await (axios.delete(url));
+        break;
+      }
+      default: throw new Error('method should be resty');
+
+    }
+    this.setState({ data: data.data.results, requestParams });
+    console.log(this.state.requestParams);
   }
 
   render() {
