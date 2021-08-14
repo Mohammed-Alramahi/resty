@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useReducer, useState, useEffect } from 'react';
 
 import './app.scss';
 
@@ -9,69 +9,107 @@ import Footer from './components/footer';
 import Form from './components/form';
 import Results from './components/results';
 import Loading from './components/loading';
+import History from './components/history';
 import axios from 'axios';
+const initialState = [];
 
-class App extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: null,
-      requestParams: {},
-      showLoading: false
-    };
+function reducer(history = initialState, action) {
+  const { type, payload } = action;
+  switch (type) {
+    case 'AddToHistory':
+      history = [...history, payload];
+      return history;
+    default:
+      return history;
   }
-  fakeCall() {
-    this.setState({ showLoading: true })
+}
+function addToHistory(url, method, result, statusCode) {
+
+  return ({
+    type: 'AddToHistory',
+    payload: {
+      url,
+      method,
+      result,
+      statusCode
+    }
+  })
+}
+
+function App() {
+  const [history, dispatch] = useReducer(reducer, initialState);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [requestParams, setRequestParams] = useState({});
+  const [statusCode, setStatusCode] = useState(null);
+  function fakeCall() {
+    setLoading(true);
     setTimeout(() => {
-      this.setState({ showLoading: false })
+      setLoading(false);
     }, 1000);
 
   }
+  useEffect(() => {
+    dispatch(addToHistory(requestParams.url, requestParams.method, data, statusCode));
+  }, [requestParams]);
 
-
-  callApi = async (requestParams) => {
+  async function callApi(requestParams) {
     // mock output
-    this.fakeCall();
-    let data;
+    fakeCall();
+    let response;
     const { method, url, reqBody } = requestParams;
     switch (method) {
       case 'GET': {
-        data = await (axios.get(url));
+        response = await (axios.get(url).catch(err => {
+          setData(err.message)
+        }));
         break;
       }
       case 'POST': {
-        data = await (axios.post(url, reqBody));
+        response = await (axios.post(url, JSON.parse(reqBody)).catch(err => {
+          setData(err.message)
+        }));
         break;
       }
       case 'PUT': {
-        data = await (axios.put(url, reqBody));
+        response = await (axios.put(url, JSON.parse(reqBody)).catch(err => {
+          setData(err.message)
+        }));
         break;
       }
       case 'DELETE': {
-        data = await (axios.delete(url));
+        response = await (axios.delete(url)).catch(err => {
+          setData(err.message)
+        });
         break;
       }
       default: throw new Error('method should be resty');
 
     }
-    this.setState({ data: data.data.results, requestParams });
-    console.log(this.state.requestParams);
-  }
+    if (response) {
+      setData(response.data);
+      setRequestParams(requestParams);
+      setStatusCode(response.status);
+    }
 
-  render() {
-    return (
-      <React.Fragment >
-        <Header />
-        <div>Request Method: {this.state.requestParams.method}</div>
-        <div>URL: {this.state.requestParams.url}</div>
-        <Form handleApiCall={this.callApi} />
-        {this.state.showLoading && <Loading />}
-        {!this.state.showLoading && <Results data={this.state.data} />}
-        <Footer />
-      </React.Fragment >
-    );
+    //this.setState({ data: data.data.results, requestParams });
+    //console.log(this.state.requestParams);
   }
+  function historyfunc(result) {
+    setData(result);
+  }
+  return (
+    <React.Fragment >
+      <Header />
+      <div>Request Method: {requestParams.method}</div>
+      <div>URL: {requestParams.url}</div>
+      <Form handleApiCall={callApi} />
+      {loading && <Loading />}
+      {!loading && <Results data={data} />}
+      {!loading && <History historyfunc={historyfunc} history={history} />}
+      <Footer />
+    </React.Fragment >
+  );
 }
 
 export default App;

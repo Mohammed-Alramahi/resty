@@ -4,8 +4,8 @@ import './form.scss';
 
 function Form(props) {
   const [method, setMethod] = useState('GET');
-  const [url, setUrl] = useState('');
-  const [reqBody, setReqBody] = useState({});
+  const [url, setUrl] = useState('https://ramahi-api.herokuapp.com/api/v1/food');
+  const [reqBody, setReqBody] = useState(`{"name":"mansaf","description":"best dish ever!"}`);
   const [getCssClass, setGetCssClass] = useState('normal');
   const [postCssClass, setPostCssClass] = useState('normal');
   const [putCssClass, setPutCssClass] = useState('normal');
@@ -25,9 +25,6 @@ function Form(props) {
     props.handleApiCall(formData);
 
   }
-
-
-
 
   function methodChange(e) {
     setGetCssClass('normal');
@@ -72,7 +69,8 @@ function Form(props) {
           <span id="delete" className={putCssClass} onClick={(e) => methodChange(e)}>PUT</span>
           <span id="delete" className={deleteCssClass} onClick={(e) => methodChange(e)}>DELETE</span>
         </label>
-        {showText && <input type="text" name="body" />}
+        {showText && <textarea className="reqBody" rows="5" cols="60" name="body" onChange={(e) => setReqBody(e.target.value)} value={reqBody}></textarea>}
+        {console.log(reqBody)}
       </form>
 
     </>
