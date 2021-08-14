@@ -4,7 +4,10 @@ form {
   display: inline-block;
   margin: auto;
   width: 200px;
-  
+  .reqBody{
+   resize: none; 
+   color:royalblue
+  }
   label {
     display: flex;
     margin: 1rem 0;
